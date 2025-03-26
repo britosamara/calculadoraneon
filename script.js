@@ -1,8 +1,9 @@
 const display = document.getElementById('display');
 const buttons = document.querySelectorAll('.buttons button');
 
-let current = '';
-let result = '';
+let current = '';       // expressão atual
+let lastResult = null;  // último resultado
+let lastOperator = '';  // último operador usado
 let justEvaluated = false;
 
 function updateDisplay(value) {
@@ -13,83 +14,69 @@ buttons.forEach(button => {
   button.addEventListener('click', () => {
     const value = button.textContent;
 
+    // Limpar tudo
     if (button.id === 'clear') {
       current = '';
-      result = '';
-      updateDisplay('0');
+      lastResult = null;
+      lastOperator = '';
       justEvaluated = false;
+      updateDisplay('0');
       return;
     }
 
+    // Backspace
     if (button.id === 'ce') {
       current = current.slice(0, -1);
       updateDisplay(current || '0');
       return;
     }
 
+    // Igual
     if (button.id === 'equals') {
       try {
-        result = eval(current).toString();
-        updateDisplay(result);
+        lastResult = eval(current);
+        updateDisplay(lastResult.toString());
         justEvaluated = true;
       } catch {
         updateDisplay('Erro');
-        current = '';
-        justEvaluated = false;
       }
       return;
     }
 
+    // Funções especiais (1/x, x², √)
     if (value === '1/x') {
-      try {
-        result = (1 / parseFloat(display.textContent)).toString();
-        updateDisplay(result);
-        current = result;
-      } catch {
-        updateDisplay('Erro');
-        current = '';
-      }
+      current = (1 / parseFloat(display.textContent)).toString();
+      updateDisplay(current);
+      justEvaluated = true;
       return;
     }
 
     if (value === 'x²') {
-      try {
-        result = Math.pow(parseFloat(display.textContent), 2).toString();
-        updateDisplay(result);
-        current = result;
-      } catch {
-        updateDisplay('Erro');
-        current = '';
-      }
+      current = Math.pow(parseFloat(display.textContent), 2).toString();
+      updateDisplay(current);
+      justEvaluated = true;
       return;
     }
 
     if (value === '√') {
-      try {
-        result = Math.sqrt(parseFloat(display.textContent)).toString();
-        updateDisplay(result);
-        current = result;
-      } catch {
-        updateDisplay('Erro');
-        current = '';
-      }
+      current = Math.sqrt(parseFloat(display.textContent)).toString();
+      updateDisplay(current);
+      justEvaluated = true;
       return;
     }
 
     if (button.id === 'sign') {
-      if (display.textContent.startsWith('-')) {
-        current = display.textContent.slice(1);
-      } else {
-        current = '-' + display.textContent;
-      }
+      current = display.textContent.startsWith('-')
+        ? display.textContent.slice(1)
+        : '-' + display.textContent;
       updateDisplay(current);
       return;
     }
 
-    // Cálculo encadeado após '='
+    // Se acabou de calcular e apertou operador → encadear cálculo
     if (justEvaluated) {
       if (['+', '-', '*', '/'].includes(value)) {
-        current = result + value;
+        current = lastResult.toString() + value;
       } else {
         current = value;
       }
