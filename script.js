@@ -29,10 +29,22 @@ buttons.forEach(button => {
 
     if (button.id === 'equals') {
       try {
-        result = eval(current.replace(',', '.')).toString();
+        result = eval(current).toString();
         updateDisplay(result);
         justEvaluated = true;
-        current = result; // usa o resultado como base para o próximo cálculo
+      } catch {
+        updateDisplay('Erro');
+        current = '';
+        justEvaluated = false;
+      }
+      return;
+    }
+
+    if (value === '1/x') {
+      try {
+        result = (1 / parseFloat(display.textContent)).toString();
+        updateDisplay(result);
+        current = result;
       } catch {
         updateDisplay('Erro');
         current = '';
@@ -40,35 +52,41 @@ buttons.forEach(button => {
       return;
     }
 
-    if (value === '1/x') {
-      current = (1 / parseFloat(current)).toString();
-      updateDisplay(current);
-      return;
-    }
-
     if (value === 'x²') {
-      current = Math.pow(parseFloat(current), 2).toString();
-      updateDisplay(current);
+      try {
+        result = Math.pow(parseFloat(display.textContent), 2).toString();
+        updateDisplay(result);
+        current = result;
+      } catch {
+        updateDisplay('Erro');
+        current = '';
+      }
       return;
     }
 
     if (value === '√') {
-      current = Math.sqrt(parseFloat(current)).toString();
-      updateDisplay(current);
+      try {
+        result = Math.sqrt(parseFloat(display.textContent)).toString();
+        updateDisplay(result);
+        current = result;
+      } catch {
+        updateDisplay('Erro');
+        current = '';
+      }
       return;
     }
 
     if (button.id === 'sign') {
-      if (current.startsWith('-')) {
-        current = current.slice(1);
+      if (display.textContent.startsWith('-')) {
+        current = display.textContent.slice(1);
       } else {
-        current = '-' + current;
+        current = '-' + display.textContent;
       }
       updateDisplay(current);
       return;
     }
 
-    // Se acabou de calcular e o usuário apertou um operador, continua o cálculo
+    // Cálculo encadeado após '='
     if (justEvaluated) {
       if (['+', '-', '*', '/'].includes(value)) {
         current = result + value;
