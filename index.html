@@ -4,13 +4,26 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Calculadora Neon</title>
+  
   <link rel="stylesheet" href="style.css" />
   <link rel="manifest" href="manifest.json">
-  <link rel="icon" type="image/png" href="icon-192.png">
+  <link rel="icon" type="image/png" href="icon-192.png" sizes="192x192">
+
+  <!-- Meta tags PWA (opcional, mas recomendadas) -->
+  <meta name="theme-color" content="#00e6ff">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Calculadora Neon">
+
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('service-worker.js');
+        navigator.serviceWorker.register('service-worker.js').then(() => {
+          console.log('Service Worker registrado com sucesso!');
+        }).catch(err => {
+          console.log('Erro ao registrar o Service Worker:', err);
+        });
       });
     }
   </script>
@@ -45,6 +58,7 @@
     </div>
   </div>
 
+  <!-- Botão de instalação -->
   <button id="installBtn" style="display:none;" class="install-btn">Instalar Aplicativo</button>
 
   <script src="script.js"></script>
